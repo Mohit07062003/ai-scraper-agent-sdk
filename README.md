@@ -118,10 +118,12 @@ The API verifies the on-chain transaction and returns the scraped content:
 
 | Protection | Detail |
 |---|---|
-| Double-spend | Each transaction signature is tracked — can never be reused |
+| Double-spend | Each transaction signature is tracked — can never be reused ✅ Confirmed |
 | Time expiry | Transactions older than 5 minutes are rejected |
 | Exact amount | Checks raw USDC integer units — underpayment rejected |
 | Recipient check | Only transfers to the API wallet are accepted |
+
+> **Replay protection verified:** Reusing a valid signature returns `"This payment receipt has already been used."` Submitting a fake signature returns `"Scraping failed or invalid transaction."` Both tested on mainnet.
 
 ---
 
