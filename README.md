@@ -28,7 +28,7 @@ This API uses the **HTTP 402 (Payment Required)** standard built on the **x402 p
 
 | Field | Value |
 |---|---|
-| Base URL | `https://ai-scraper-api-4dkl.onrender.com` |
+| Base URL | `http://3.107.200.4:3000` |
 | Protocol | x402 (HTTP 402 + Solana on-chain payment) |
 | Network | Solana Mainnet |
 | Token | USDC |
@@ -43,7 +43,7 @@ The easiest way to call this API is with the [Solana Foundation `pay` CLI](https
 
 ```bash
 npm install -g @solana/pay
-pay --dev curl -X POST https://ai-scraper-api-4dkl.onrender.com/scrape \
+pay --dev curl -X POST http://3.107.200.4:3000/scrape \
   -H "Content-Type: application/json" \
   -d '{"targetUrl": "https://example.com"}'
 ```
@@ -55,7 +55,7 @@ pay --dev curl -X POST https://ai-scraper-api-4dkl.onrender.com/scrape \
 ### 1️⃣ Agent Makes a Request
 
 ```bash
-curl -X POST https://ai-scraper-api-4dkl.onrender.com/scrape \
+curl -X POST http://3.107.200.4:3000/scrape \
   -H "Content-Type: application/json" \
   -d '{"targetUrl": "https://quotes.toscrape.com"}'
 ```
@@ -91,7 +91,7 @@ WWW-Authenticate: Payment v=0,a=0.005,t=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyT
 The agent sends `0.005 USDC` to the recipient wallet on Solana, then retries the request with the transaction signature in the `Payment-Payload` header:
 
 ```bash
-curl -X POST https://ai-scraper-api-4dkl.onrender.com/scrape \
+curl -X POST http://3.107.200.4:3000/scrape \
   -H "Content-Type: application/json" \
   -H "Payment-Payload: YOUR_SOLANA_TRANSACTION_SIGNATURE" \
   -d '{"targetUrl": "https://quotes.toscrape.com"}'
@@ -157,7 +157,7 @@ Works out-of-the-box with any tool that supports x402:
 
 ```bash
 npm install -g @solana/pay
-pay --dev curl -X POST https://ai-scraper-api-4dkl.onrender.com/scrape \
+pay --dev curl -X POST http://3.107.200.4:3000/scrape \
   -H "Content-Type: application/json" \
   -d '{"targetUrl": "https://example.com"}'
 ```
