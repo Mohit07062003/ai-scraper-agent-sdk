@@ -1,15 +1,31 @@
 # 🕸️ Autonomous Web3 Scraper API for AI Agents
 
-Welcome to the **Web3 Scraper API** — a headless, subscription-free web scraping tool designed exclusively for Autonomous AI Agents and the Machine Economy.
+A headless, subscription-free web scraping API built exclusively for Autonomous AI Agents and the Machine Economy.
 
-Traditional web scraping APIs (like Scrapfly or BrightData) require human intervention: signing up, managing API keys, and paying $50/month subscriptions. **AI agents can't do that.**
+Traditional scraping APIs (Scrapfly, BrightData) require human sign-ups, API keys, and $50/month plans. **AI agents can't do that.**
 
-This API uses the **HTTP 402 (Payment Required)** standard built on the **x402 protocol** with Solana. Your AI agent pays exactly **0.005 USDC** per scrape directly from its crypto wallet — no accounts, no keys, no humans.
+This API uses the **HTTP 402 Payment Required** standard with the **x402 protocol** on Solana. Your agent pays exactly **0.005 USDC** per scrape directly from its crypto wallet — no accounts, no keys, no humans.
 
 ✅ No subscriptions  
 ✅ No API keys  
 ✅ No human required  
+✅ Always-on — hosted on AWS EC2 (no cold starts)  
 ✅ x402 protocol — works with `pay` CLI and any x402-compatible agent  
+
+---
+
+## 🔌 API Details
+
+| Field | Value |
+|---|---|
+| Base URL | `https://ai-scraper-api.duckdns.org` |
+| OpenAPI Spec | `https://ai-scraper-api.duckdns.org/openapi.json` |
+| Protocol | x402 (HTTP 402 + Solana on-chain payment) |
+| Network | Solana Mainnet |
+| Token | USDC |
+| USDC Mint | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
+| Price | `0.005 USDC` per scrape |
+| Infrastructure | AWS EC2 t3.micro — always-on, no cold starts |
 
 ---
 
@@ -19,31 +35,19 @@ This API uses the **HTTP 402 (Payment Required)** standard built on the **x402 p
 - **Pay-per-Request:** Costs exactly `0.005 USDC` per scrape
 - **Agent Native:** Implements the `x402` protocol (LangChain, AutoGPT, MCP ready)
 - **Instant Settlement:** Powered by the Solana blockchain
-- **Replay Protection:** Each payment signature can only be used once
+- **Replay Protection:** Each payment signature can only be used once ✅ Verified
 - **Time-bound Payments:** Transactions must be made within the last 5 minutes
-
----
-
-## 🔌 API Details
-
-| Field | Value |
-|---|---|
-| Base URL | `https://ai-scraper-api.duckdns.org` |
-| Protocol | x402 (HTTP 402 + Solana on-chain payment) |
-| Network | Solana Mainnet |
-| Token | USDC |
-| USDC Mint | `EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v` |
-| Price | `0.005 USDC` per scrape |
+- **Float-safe Verification:** Payment amounts checked in raw USDC integer units
 
 ---
 
 ## ⚡ Quickstart — Using the `pay` CLI (Recommended)
 
-The easiest way to call this API is with the [Solana Foundation `pay` CLI](https://github.com/solana-foundation/pay). It handles the 402 challenge, payment, and retry automatically in one command.
+The [Solana Foundation `pay` CLI](https://github.com/solana-foundation/pay) handles the 402 challenge, payment, and retry automatically in one command.
 
 ```bash
 npm install -g @solana/pay
-pay --dev curl -X POST https://ai-scraper-api.duckdns.org/scrape \
+pay curl -X POST https://ai-scraper-api.duckdns.org/scrape \
   -H "Content-Type: application/json" \
   -d '{"targetUrl": "https://example.com"}'
 ```
@@ -84,11 +88,9 @@ WWW-Authenticate: Payment v=0,a=0.005,t=EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyT
 }
 ```
 
----
-
 ### 3️⃣ Agent Pays and Retries
 
-The agent sends `0.005 USDC` to the recipient wallet on Solana, then retries the request with the transaction signature in the `Payment-Payload` header:
+Send `0.005 USDC` to the recipient wallet on Solana, then retry with the transaction signature in the `Payment-Payload` header:
 
 ```bash
 curl -X POST https://ai-scraper-api.duckdns.org/scrape \
@@ -99,11 +101,7 @@ curl -X POST https://ai-scraper-api.duckdns.org/scrape \
 
 > **Note:** The legacy `x-payment-signature` header is also accepted for backward compatibility.
 
----
-
 ### 4️⃣ Data Delivered 📦
-
-The API verifies the on-chain transaction and returns the scraped content:
 
 ```json
 {
@@ -118,18 +116,16 @@ The API verifies the on-chain transaction and returns the scraped content:
 
 | Protection | Detail |
 |---|---|
-| Double-spend | Each transaction signature is tracked — can never be reused ✅ Confirmed |
+| Double-spend | Each signature tracked — can never be reused ✅ Verified on mainnet |
 | Time expiry | Transactions older than 5 minutes are rejected |
-| Exact amount | Checks raw USDC integer units — underpayment rejected |
+| Exact amount | Raw USDC integer units checked — underpayment rejected |
 | Recipient check | Only transfers to the API wallet are accepted |
 
-> **Replay protection verified:** Reusing a valid signature returns `"This payment receipt has already been used."` Submitting a fake signature returns `"Scraping failed or invalid transaction."` Both tested on mainnet.
+> **Mainnet verified:** Reusing a valid signature returns `"This payment receipt has already been used."` A fake signature returns `"Scraping failed or invalid transaction."`
 
 ---
 
 ## 🤖 Compatible Agent Frameworks
-
-Works out-of-the-box with any tool that supports x402:
 
 - [Solana Foundation `pay` CLI](https://github.com/solana-foundation/pay)
 - [x402-fetch](https://www.npmjs.com/package/x402-fetch) npm package
@@ -148,8 +144,9 @@ Works out-of-the-box with any tool that supports x402:
 | Protocol | x402 (HTTP 402 + Solana) |
 | Payment header | `Payment-Payload: <tx_signature>` |
 | Output | HTML or Markdown |
-| Replay protection | ✅ |
+| Replay protection | ✅ Verified |
 | Time-bound | ✅ 5-minute window |
+| Uptime | ✅ Always-on (AWS EC2, no cold starts) |
 
 ---
 
@@ -157,7 +154,7 @@ Works out-of-the-box with any tool that supports x402:
 
 ```bash
 npm install -g @solana/pay
-pay --dev curl -X POST https://ai-scraper-api.duckdns.org/scrape \
+pay curl -X POST https://ai-scraper-api.duckdns.org/scrape \
   -H "Content-Type: application/json" \
   -d '{"targetUrl": "https://example.com"}'
 ```
